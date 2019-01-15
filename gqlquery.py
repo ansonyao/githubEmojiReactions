@@ -1,16 +1,11 @@
 import requests
 import os
-from pprint import PrettyPrinter
 from githubtoken import bearerToken
-pp = PrettyPrinter(indent=4)
 
 def getHeaders():
-    pp.pprint("getHeaders")
     if bearerToken:
-        pp.pprint(bearerToken)
         return {"Authorization": f"Bearer {bearerToken}"}
     else:
-        pp.pprint("no header")
         return {}
 
 def getIssuesPagedRequest(owner, name, cursor): 
@@ -47,7 +42,7 @@ def getIssuesPagedRequest(owner, name, cursor):
     return result
 
 
-def getReactionsPagedRequest(owner, name, issueNumber, cursor): 
+def getReactionsForIssueBody(owner, name, issueNumber, cursor): 
     issueQuery = """
         query fetchReactions($owner: String!, $name: String!, $issueNumber: Int!, $cursor: String) {
             repository(owner: $owner, name: $name) {
@@ -82,7 +77,7 @@ def getReactionsPagedRequest(owner, name, issueNumber, cursor):
     result = requests.post('https://api.github.com/graphql', json={'query': issueQuery, 'variables': variables}, headers=getHeaders()).json()
     return result
 
-def getCommentsReactionRequest(owner, name, issueNumber, cursor):
+def getReactionsForCommentsRequest(owner, name, issueNumber, cursor):
     query = """
         query fetchComments($owner: String!, $name: String!, $issueNumber: Int!, $cursor: String) {
             repository(owner: $owner, name: $name) {

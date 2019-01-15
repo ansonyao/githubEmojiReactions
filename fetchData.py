@@ -1,5 +1,5 @@
 from pprint import PrettyPrinter
-from gqlquery import getIssuesPagedRequest, getReactionsPagedRequest, getCommentsReactionRequest
+from gqlquery import getIssuesPagedRequest, getReactionsForIssueBody, getReactionsForCommentsRequest
 import time
 
 pp = PrettyPrinter(indent=4)
@@ -10,8 +10,6 @@ def getReactions(owner, name):
     for number in issuesNumbers:
         issueReactions = getReactionsOfIssue(owner, name, number) 
         results = mergeReactionDict(results, issueReactions)
-        pp.pprint("total")
-        pp.pprint(results)
     return results
 
 def mergeReactionDict(oldDict, additionalDict):
@@ -43,12 +41,11 @@ def getIssues(owner, name):
 
 def getReactionsOfIssue(owner, name, issueNumber):
     issueBodyReactions = getReactionsOfIssueBody(owner, name, issueNumber)
-    pp.pprint("issueBodyReactions")
-    pp.pprint(issueBodyReactions)
     issueCommentReactions = getReactionsOfIssueComments(owner, name, issueNumber)
-    pp.pprint("issueCommentReactions")
-    pp.pprint(issueCommentReactions)
-    return mergeReactionDict(issueBodyReactions, issueCommentReactions)
+    result = mergeReactionDict(issueBodyReactions, issueCommentReactions)
+    pp.pprint(f"issue {issueNumber}:")
+    pp.pprint(result)
+    return result
 
 
 def getReactionsOfIssueBody(owner, name, issueNumber):
@@ -59,7 +56,7 @@ def getReactionsOfIssueBody(owner, name, issueNumber):
     def getContent(obj):
         return obj['node']['content']
     while hasNextPage:
-        result = getReactionsPagedRequest(owner, name, issueNumber, cursor)
+        result = getReactionsForIssueBody(owner, name, issueNumber, cursor)
         reactions = result['data']['repository']['issue']['reactions']
         hasNextPage = reactions["pageInfo"]['hasNextPage']
         if len(reactions["edges"]) > 0:
@@ -84,7 +81,7 @@ def getReactionsOfIssueComments(owner, name, issueNumber):
     def getContent(obj):
         return obj['node']['reactions']
     while hasNextPage:
-        result = getCommentsReactionRequest(owner, name, issueNumber, cursor)
+        result = getReactionsForCommentsRequest(owner, name, issueNumber, cursor)
         comments = result['data']['repository']['issue']['comments']
         hasNextPage = comments["pageInfo"]['hasNextPage']
         if len(comments["edges"]) > 0:
