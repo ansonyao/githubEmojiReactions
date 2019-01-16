@@ -1,5 +1,5 @@
 # What
-A python program to count the emoji reactions in any github repo on issues and issue comments. 
+A python program to count the emoji reactions in any github repo on issues and issue comments. It is based on queries on the GraphQL Github API V4. 
 
 # Why
 For emojis! 👍 👎 😄 😕 ❤️ 🎉
@@ -14,14 +14,15 @@ pipenv shell
 python example.py
 ```
 
+As you will see from the result, it does handle the edge case where there are more than 100 emojis under a comment. You can verify this with repo denoland/deno issue 25. 
+
+It also handles the limitation of Github API where you have a quota on the number of requests per hour. The program will sleep when it almost hits the limit and it will resume after one hour when the quota is renewed. 
+
 # Use the code as a library 
 ```python
 from fetchData import getReactions
 result = getReactions('denoland', 'deno')
 ```
 
-As you will see from the result, it does handle the edge case where there are more than 100 emojis under a comment. You can verify this with repo denoland/deno issue 25. 
-
-It also handles the limitation of Github API where you have a quota on the number of requests per hour. The program will sleep when it almost hits the limit and it will resume after one hour when the quota is renewed. 
 
 
