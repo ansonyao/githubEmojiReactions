@@ -1,6 +1,6 @@
 import requests
 import os
-from githubtoken import bearerToken
+from githubToken import bearerToken
 
 def getHeaders():
     if bearerToken:
